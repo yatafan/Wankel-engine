@@ -1,0 +1,11 @@
+body {
+	margin: 0px;
+}
+
+canvas {
+	display: block;
+}
+
+::-webkit-scrollbar{
+	display: none;
+}
