@@ -1,5 +1,8 @@
-const canvas = document.querySelector("canvas");
+const canvas = document.getElementById("rotor");
 const context = canvas.getContext("2d");
+
+const canvas_bg = document.getElementById("background");
+const context_bg = canvas_bg.getContext("2d");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -67,9 +70,52 @@ const angle_speed = 1; // Угловая скорость
 // Большая шестерня
 let big_gear = {
 	outer_radius: rotor_radius / 2,
-	inner_radius: (rotor_radius / 2) * 0.8,
-	tooth_size: rotor_radius / 10
+	inner_radius: (rotor_radius / 2) * 0.85,
+	tooth_size: rotor_radius / 15,
+	angle: 0
 }
+
+// Малая шестерня
+let small_gear = {
+	//radius: big_gear.outer_radius * 0.2,
+	//tooth_size: big_gear.tooth_size
+	radius: 15,
+	tooth_size: 15
+}
+
+// Отрисовка малой шестерни
+let small_gear_teeth = []; // Вершины зубьев шестерни
+let small_teeth_places = []; // Места где стоят зубья
+
+for(let i = 0, j = 0; j <= 24; i += 15, j++){
+	let p = new Point();
+	p.x = (small_gear.radius - small_gear.tooth_size) * Math.cos(i * degree) + const_center.x;
+	p.y = (small_gear.radius - small_gear.tooth_size) * Math.sin(i * degree) + const_center.y;
+	small_gear_teeth.push(p);
+}
+
+for(let i = 7.5, j = 0; j < 24; i += 15, j++){
+	let p = new Point();
+	p.x = small_gear.radius * Math.cos(i * degree) + const_center.x;
+	p.y = small_gear.radius * Math.sin(i * degree) + const_center.y;
+	small_teeth_places.push(p);
+}
+
+context_bg.beginPath();
+context_bg.fillStyle = "rgb(169,169,169)";
+
+//context_bg.moveTo(small_gear_teeth[0].x, small_gear_teeth[0].y);
+
+context_bg.arc(const_center.x, const_center.y, small_gear.radius, 0, 2 * Math.PI);
+
+for(let i = 0; i < small_teeth_places.length; i++){
+	context_bg.lineTo(small_teeth_places[i].x, small_teeth_places[i].y);
+	context_bg.lineTo(small_gear_teeth[i+1].x, small_gear_teeth[i+1].y);
+}
+
+context_bg.closePath();
+context_bg.fill();
+context_bg.stroke();
 
 function draw_rotor(){
 	// Вращение центра
@@ -109,33 +155,39 @@ function draw_rotor(){
 
 	context.beginPath();
 	context.arc(center.x, center.y, big_gear.outer_radius, 0, 2 * Math.PI);
+	context.closePath();
+	context.fill();
+	context.stroke();
 
-	context.arc(center.x, center.y, big_gear.inner_radius, 0, 2 * Math.PI);
+	context.beginPath();
+	context.fillStyle = "rgb(255,255,255)";
+	// context.arc(center.x, center.y, big_gear.inner_radius, 0, 2 * Math.PI);
 
-	let geer_teeth = []; // Вершины зубьев шестерни
-	let teeth_places = []; // Места где стоят зубья
+	let big_gear_teeth = []; // Вершины зубьев шестерни
+	let big_teeth_places = []; // Места где стоят зубья
 
-	for(let i = 0; i <= 360; i += 15){
+	for(let i = big_gear.angle, j = 0; j <= 24; i += 15, j++){
 		let p = new Point();
 		p.x = (big_gear.inner_radius - big_gear.tooth_size) * Math.cos(i * degree) + center.x;
 		p.y = (big_gear.inner_radius - big_gear.tooth_size) * Math.sin(i * degree) + center.y;
-		geer_teeth.push(p);
+		big_gear_teeth.push(p);
 	}
 
-	for(let i = 7.5; i < 360; i += 15){
+	for(let i = big_gear.angle + 7.5, j = 0; j < 24; i += 15, j++){
 		let p = new Point();
 		p.x = big_gear.inner_radius * Math.cos(i * degree) + center.x;
 		p.y = big_gear.inner_radius * Math.sin(i * degree) + center.y;
-		teeth_places.push(p);
-	}
-	
-	for(let i = 0; i < teeth_places.length; i++){
-		context.moveTo(geer_teeth[i].x, geer_teeth[i].y);
-		context.lineTo(teeth_places[i].x, teeth_places[i].y);
-		context.moveTo(teeth_places[i].x, teeth_places[i].y);
-		context.lineTo(geer_teeth[i+1].x, geer_teeth[i+1].y);
+		big_teeth_places.push(p);
 	}
 
+	big_gear.angle += angle_speed;
+	if(big_gear.angle == 15){ big_gear.angle = 0; }
+	
+	for(let i = 0; i < big_teeth_places.length; i++){
+		context.lineTo(big_teeth_places[i].x, big_teeth_places[i].y);
+		context.lineTo(big_gear_teeth[i+1].x, big_gear_teeth[i+1].y);
+	}
+	
 	context.closePath();
 	context.fill();
 	context.stroke();
@@ -157,4 +209,4 @@ function draw_rotor(){
 	}
 }
 
-setInterval(draw_rotor, 25);
+setInterval(draw_rotor, 10);
