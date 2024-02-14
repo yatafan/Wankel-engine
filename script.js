@@ -4,8 +4,17 @@ const context = canvas.getContext("2d");
 const canvas_bg = document.getElementById("background");
 const context_bg = canvas_bg.getContext("2d");
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+const canvas_camera = document.getElementById("camera");
+const context_camera = canvas_camera.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+canvas_bg.width = window.innerWidth;
+canvas_bg.height = window.innerHeight;
+
+canvas_camera.width = window.innerWidth;
+canvas_camera.height = window.innerHeight;
 
 const degree = Math.PI / 180.0; // 1 градус в радианах
 
@@ -24,6 +33,7 @@ class Point{
 	}
 }
 
+// Рассчитывает координаты контрольной точки для кривой Безье
 function calc_check_point(p1, p2, height){
 	let _center = new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
 	
@@ -77,24 +87,22 @@ let big_gear = {
 
 // Малая шестерня
 let small_gear = {
-	//radius: big_gear.outer_radius * 0.2,
-	//tooth_size: big_gear.tooth_size
-	radius: 15,
-	tooth_size: 15
+	radius: big_gear.inner_radius * (2.0/3.0),
+	tooth_size: big_gear.tooth_size
 }
 
 // Отрисовка малой шестерни
 let small_gear_teeth = []; // Вершины зубьев шестерни
 let small_teeth_places = []; // Места где стоят зубья
 
-for(let i = 0, j = 0; j <= 24; i += 15, j++){
+for(let i = 0, j = 0; j <= 16; i += 22.5, j++){
 	let p = new Point();
 	p.x = (small_gear.radius - small_gear.tooth_size) * Math.cos(i * degree) + const_center.x;
 	p.y = (small_gear.radius - small_gear.tooth_size) * Math.sin(i * degree) + const_center.y;
 	small_gear_teeth.push(p);
 }
 
-for(let i = 7.5, j = 0; j < 24; i += 15, j++){
+for(let i = 11.25, j = 0; j < 16; i += 22.5, j++){
 	let p = new Point();
 	p.x = small_gear.radius * Math.cos(i * degree) + const_center.x;
 	p.y = small_gear.radius * Math.sin(i * degree) + const_center.y;
@@ -104,10 +112,6 @@ for(let i = 7.5, j = 0; j < 24; i += 15, j++){
 context_bg.beginPath();
 context_bg.fillStyle = "rgb(169,169,169)";
 
-//context_bg.moveTo(small_gear_teeth[0].x, small_gear_teeth[0].y);
-
-context_bg.arc(const_center.x, const_center.y, small_gear.radius, 0, 2 * Math.PI);
-
 for(let i = 0; i < small_teeth_places.length; i++){
 	context_bg.lineTo(small_teeth_places[i].x, small_teeth_places[i].y);
 	context_bg.lineTo(small_gear_teeth[i+1].x, small_gear_teeth[i+1].y);
@@ -116,6 +120,21 @@ for(let i = 0; i < small_teeth_places.length; i++){
 context_bg.closePath();
 context_bg.fill();
 context_bg.stroke();
+
+//Отрисовка камеры сгорания
+
+context_camera.beginPath();
+context_camera.fillStyle = "rgb(69,69,69)";
+
+context_camera.arc(const_center.x - center_offset, const_center.y, rotor_radius + 10, 90 * degree, 270 * degree);
+context_camera.arc(const_center.x - center_offset, const_center.y, rotor_radius, 90 * degree, 270 * degree);
+
+context_camera.arc(const_center.x + center_offset, const_center.y, rotor_radius + 10, 270 * degree, 90 * degree);
+context_camera.arc(const_center.x + center_offset, const_center.y, rotor_radius, 270 * degree, 90 * degree);
+
+context_camera.closePath();
+context_camera.fill();
+context_camera.stroke();
 
 function draw_rotor(){
 	// Вращение центра
