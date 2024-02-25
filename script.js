@@ -110,7 +110,7 @@ for(let i = 11.25, j = 0; j < 16; i += 22.5, j++){
 }
 
 context_bg.beginPath();
-context_bg.fillStyle = "rgb(169,169,169)";
+context_bg.fillStyle = "rgb(228,14,88)";
 
 for(let i = 0; i < small_teeth_places.length; i++){
 	context_bg.lineTo(small_teeth_places[i].x, small_teeth_places[i].y);
@@ -124,13 +124,9 @@ context_bg.stroke();
 //Отрисовка камеры сгорания
 
 context_camera.beginPath();
-context_camera.fillStyle = "rgb(69,69,69)";
+context_camera.fillStyle = "rgb(228,228,228)";
 
-context_camera.arc(const_center.x - center_offset, const_center.y, rotor_radius + 10, 90 * degree, 270 * degree);
-context_camera.arc(const_center.x - center_offset, const_center.y, rotor_radius, 90 * degree, 270 * degree);
 
-context_camera.arc(const_center.x + center_offset, const_center.y, rotor_radius + 10, 270 * degree, 90 * degree);
-context_camera.arc(const_center.x + center_offset, const_center.y, rotor_radius, 270 * degree, 90 * degree);
 
 context_camera.closePath();
 context_camera.fill();
@@ -170,7 +166,7 @@ function draw_rotor(){
 	context.fill();
 
 	// Рисование большей шестерни
-	context.fillStyle = "rgb(169,169,169)";
+	context.fillStyle = "rgb(14,228,88)";
 
 	context.beginPath();
 	context.arc(center.x, center.y, big_gear.outer_radius, 0, 2 * Math.PI);
